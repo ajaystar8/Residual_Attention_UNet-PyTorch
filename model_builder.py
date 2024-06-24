@@ -89,7 +89,7 @@ class DecoderBlock(nn.Module):
             nn.ConvTranspose2d(in_channels_low, in_channels_high, kernel_size=2, stride=2),
             nn.BatchNorm2d(in_channels_high)
         )
-        self.attention = AAMBlock(in_channels_low, in_channels_high)
+        self.attention = AAMBlock(in_channels_high, in_channels_high)
 
     def forward(self, x_low: torch.Tensor, x_high: torch):
         x = self.attention(self.up1(x_low), x_high)
