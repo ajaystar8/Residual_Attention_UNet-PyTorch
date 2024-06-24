@@ -86,8 +86,8 @@ class DecoderBlock(nn.Module):
         super(DecoderBlock, self).__init__()
 
         self.up1 = nn.Sequential(
-            nn.ConvTranspose2d(in_channels_low, in_channels_low, kernel_size=2, stride=2),
-            nn.BatchNorm2d(in_channels_low)
+            nn.ConvTranspose2d(in_channels_low, in_channels_high, kernel_size=2, stride=2),
+            nn.BatchNorm2d(in_channels_high)
         )
         self.attention = AAMBlock(in_channels_low, in_channels_high)
 
