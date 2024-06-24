@@ -1,4 +1,3 @@
-from typing import *
 import torch.nn as nn
 from config import *
 from utils import utils
@@ -131,5 +130,3 @@ class RAUNet(nn.Module):
 if __name__ == '__main__':
     model = RAUNet(in_channels=1, out_channels=1)
     utils.get_model_summary(model, input_size=(1, 256, 256))
-
-

@@ -18,7 +18,7 @@ except ImportError as e:
 
 import config
 from engine import train, test_model
-from model_builder import AttentionUNet
+from model_builder import RAUNet
 from data_setup import create_dataloaders
 
 # Take command line arguments
@@ -77,7 +77,7 @@ train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
 )
 
 # create model instance
-model = AttentionUNet(in_channels=args.in_channels, out_channels=args.out_channels).to(config.DEVICE)
+model = RAUNet(in_channels=args.in_channels, out_channels=args.out_channels).to(config.DEVICE)
 
 # get_model_summary(baseline_0)
 
