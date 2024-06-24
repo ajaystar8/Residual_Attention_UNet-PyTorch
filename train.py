@@ -111,7 +111,7 @@ config = {
 
 # initialize a wandb run
 run = wandb.init(
-    project="Attention_UNet",
+    project="Residual_Attention_UNet",
     name=args.run_name,
     config=config,
 )
