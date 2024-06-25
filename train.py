@@ -48,6 +48,9 @@ hyperparameters_group.add_argument('--batch_size', type=int, metavar='N',
                                    help='number of images per batch (default: %(default)s)', default=1)
 hyperparameters_group.add_argument('--learning_rate', type=float, metavar='LR',
                                    help='learning rate for training (default: %(default)s)', default=1e-4)
+hyperparameters_group.add_argument("--exp_track", type=str, metavar='TRACK_EXPERIMENT',
+                                   help="'true' if you want to track experiments using wandb. Defaults to 'false'",
+                                   default='false')
 
 architecture_params_group = parser.add_argument_group("Architecture parameters")
 architecture_params_group.add_argument('--in_channels', metavar="IN_C", type=int,
@@ -110,34 +113,35 @@ config = {
 }
 
 # initialize a wandb run
-run = wandb.init(
-    project="Residual_Attention_UNet",
-    name=args.run_name,
-    config=config,
-)
+if args.exp_track == 'true':
+    run = wandb.init(
+        project="Residual_Attention_UNet",
+        name=args.run_name,
+        config=config,
+    )
 
-# define metrics
-wandb.define_metric("train_dice", summary="max")
-wandb.define_metric("val_dice", summary="max")
+    # define metrics
+    wandb.define_metric("train_dice", summary="max")
+    wandb.define_metric("val_dice", summary="max")
 
-wandb.define_metric("train_precision", summary="max")
-wandb.define_metric("val_precision", summary="max")
+    wandb.define_metric("train_precision", summary="max")
+    wandb.define_metric("val_precision", summary="max")
 
-wandb.define_metric("train_recall", summary="max")
-wandb.define_metric("val_recall", summary="max")
+    wandb.define_metric("train_recall", summary="max")
+    wandb.define_metric("val_recall", summary="max")
 
-# copy your config
-experiment_config = wandb.config
+    # copy your config
+    experiment_config = wandb.config
 
-# For tracking gradients
-wandb.watch(model, log="gradients", log_freq=1)
+    # For tracking gradients
+    wandb.watch(model, log="gradients", log_freq=1)
 
-# training
-wandb.alert(
-    title="Training started",
-    text=args.run_name,
-    level=wandb.AlertLevel.INFO,
-)
+    # training
+    wandb.alert(
+        title="Training started",
+        text=args.run_name,
+        level=wandb.AlertLevel.INFO,
+    )
 
 # Perform model training
 baseline_0_train_results = train(
@@ -148,7 +152,7 @@ baseline_0_train_results = train(
     loss_fn=loss_fn,
     optimizer=optimizer,
     dice_fn=dice_fn, precision_fn=precision_fn, recall_fn=recall_fn,
-    model_ckpt_name=MODEL_CKPT_NAME, checkpoint_dir=args.checkpoint_dir, verbose=args.verbose
+    model_ckpt_name=MODEL_CKPT_NAME, checkpoint_dir=args.checkpoint_dir, verbose=args.verbose, exp_track=args.exp_track,
 )
 
 # Perform testing on the trained model
