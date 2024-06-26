@@ -8,7 +8,7 @@ import torch.optim as optim
 
 import torchvision.transforms.v2 as transforms
 import wandb
-from metrics import dice_coefficient
+from metrics import dice_coefficient, CELDice
 
 try:
     # noinspection PyUnresolvedReferences
@@ -46,6 +46,9 @@ hyperparameters_group.add_argument('--epochs', type=int, metavar='NUM_EPOCHS',
                                    help='number of epochs to train (default: %(default)s)', default=10)
 hyperparameters_group.add_argument('--batch_size', type=int, metavar='N',
                                    help='number of images per batch (default: %(default)s)', default=1)
+hyperparameters_group.add_argument("--loss_fn", type=str, metavar='LOSS_FUNCTION',
+                                   help="Loss function for model training (default: %(default)s)",
+                                   default="BCELoss")
 hyperparameters_group.add_argument('--learning_rate', type=float, metavar='LR',
                                    help='learning rate for training (default: %(default)s)', default=1e-4)
 hyperparameters_group.add_argument("--exp_track", type=str, metavar='TRACK_EXPERIMENT',
@@ -85,7 +88,12 @@ model = RAUNet(in_channels=args.in_channels, out_channels=args.out_channels).to(
 # get_model_summary(baseline_0)
 
 # create a loss function instance
-loss_fn = nn.BCEWithLogitsLoss()
+if args.loss_fn == "BCELoss":
+    loss_fn = nn.BCEWithLogitsLoss()
+elif args.loss_fn == "CELDice":
+    loss_fn = CELDice()
+else:
+    raise NotImplementedError(f"{args.loss_fn} has not been implemented yet.")
 
 # create an optimizer instance
 optimizer = optim.Adam(params=model.parameters(), lr=args.learning_rate)
