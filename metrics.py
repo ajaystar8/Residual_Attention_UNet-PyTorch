@@ -51,3 +51,27 @@ class DiceLoss(nn.Module):
         DSC = 2.0 * (intersection / (union + epsilon))
         diceloss = 1 - DSC
         return diceloss
+
+
+class CELDice(nn.Module):
+    def __init__(self, alpha: int = 0.2, num_classes: int = 2):
+        super().__init__()
+        self.alpha = alpha
+        self.num_classes = num_classes
+        self.nll_loss = nn.NLLLoss()
+
+    def forward(self, y_pred_logits: torch.Tensor, y_true: torch.Tensor):
+        loss = (1 - self.alpha) * self.nll_loss(y_pred_logits, y_true)
+        if self.alpha:
+            epsilon = 1.0e-6
+            y_pred_logits = y_pred_logits.view(-1).to(torch.float)
+            y_true = y_true.view(-1).to(torch.float)
+
+            intersection = torch.sum(y_pred_logits * y_true)
+            union = torch.sum(y_pred_logits) + torch.sum(y_true)
+
+            DSC = (2.0 * intersection + epsilon) / (union + epsilon)
+            loss -= self.alpha * torch.log(DSC)
+        return loss
+
+
