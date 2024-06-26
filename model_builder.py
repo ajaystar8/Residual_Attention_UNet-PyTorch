@@ -67,7 +67,7 @@ class AAMBlock(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-    def forward(self, x_low, x_high):
+    def forward(self, x_low: torch.Tensor, x_high: torch.Tensor):
         g_x_low = self.global_avg_pooling(x_low)
         g_x_high = self.global_avg_pooling(x_high)
 
@@ -87,7 +87,8 @@ class DecoderBlock(nn.Module):
 
         self.up1 = nn.Sequential(
             nn.ConvTranspose2d(in_channels_low, in_channels_high, kernel_size=2, stride=2),
-            nn.BatchNorm2d(in_channels_high)
+            nn.BatchNorm2d(in_channels_high),
+            nn.ReLU(inplace=True)
         )
         self.attention = AAMBlock(in_channels_high, in_channels_high)
 
@@ -111,7 +112,13 @@ class RAUNet(nn.Module):
         self.d2 = DecoderBlock(in_channels_low=256, in_channels_high=128)
         self.d3 = DecoderBlock(in_channels_low=128, in_channels_high=64)
 
-        self.final_conv = ConvBlock(in_channels=64, out_channels=out_channels)
+        self.final_conv = nn.Sequential(
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, padding="same"),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, padding="same"),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(in_channels=32, out_channels=out_channels, kernel_size=3, padding="same")
+        )
 
     def forward(self, x: torch.Tensor):
         s1, x = self.e1(x)

@@ -16,6 +16,7 @@ code/datasets/movie/aclImdb_v1.tar.gz
 config/private_keys.txt
 test_results
 wandb
+models/attention_unet.pth
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
