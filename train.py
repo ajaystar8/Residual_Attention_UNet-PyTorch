@@ -97,7 +97,7 @@ dice_fn = dice_coefficient
 precision_fn = BinaryPrecision().to(config.DEVICE)
 recall_fn = BinaryRecall().to(config.DEVICE)
 
-MODEL_CKPT_NAME = "attention_unet.pth"
+MODEL_CKPT_NAME = "raunet.pth"
 
 config = {
     "image_size": (args.in_channels, args.input_dims[0], args.input_dims[1]),
