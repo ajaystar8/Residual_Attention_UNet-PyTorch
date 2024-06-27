@@ -58,14 +58,12 @@ class CELDice(nn.Module):
         super().__init__()
         self.alpha = alpha
         self.num_classes = num_classes
-
-        self.m = nn.LogSoftmax(dim=1)
         self.bce = nn.BCEWithLogitsLoss()
 
     def forward(self, y_pred_logits: torch.Tensor, y_true: torch.Tensor):
 
-        y_pred_logits = self.m(y_pred_logits).view(-1)
-        y_true = y_true.view(-1)
+        y_pred_logits = y_pred_logits.view(-1).to(torch.float)
+        y_true = y_true.view(-1).to(torch.float)
 
         loss = (1 - self.alpha) * self.bce(y_pred_logits, y_true)
         if self.alpha:

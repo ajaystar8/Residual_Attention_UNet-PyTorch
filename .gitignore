@@ -17,6 +17,7 @@ config/private_keys.txt
 test_results
 wandb
 models/attention_unet.pth
+models/raunet.pth
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
