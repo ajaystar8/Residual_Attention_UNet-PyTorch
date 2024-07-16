@@ -32,8 +32,8 @@ parser.add_argument('checkpoint_dir', metavar='CHECKPOINT_DIR',
 parser.add_argument('run_name', metavar='RUN_NAME', help='Name of current run')
 parser.add_argument('dataset_name', metavar='DATASET_NAME',
                     help='Name of dataset over which model is to be trained')
-parser.add_argument('wandb_api_key', metavar='WANDB_API_KEY',
-                    help='API key of your Weights and Biases Account.')
+parser.add_argument('--wandb_api_key', metavar='WANDB_API_KEY',
+                    help='API key of your Weights and Biases Account.', required=False)
 
 # optional arguments
 parser.add_argument('-v', '--verbose', type=int, metavar='VERBOSITY', choices=[0, 1], default=0,
@@ -48,7 +48,7 @@ hyperparameters_group.add_argument('--batch_size', type=int, metavar='N',
                                    help='number of images per batch (default: %(default)s)', default=1)
 hyperparameters_group.add_argument("--loss_fn", type=str, metavar='LOSS_FUNCTION',
                                    help="Loss function for model training (default: %(default)s)",
-                                   default="BCELoss")
+                                   default="BCEWithLogitsLoss")
 hyperparameters_group.add_argument('--learning_rate', type=float, metavar='LR',
                                    help='learning rate for training (default: %(default)s)', default=1e-4)
 hyperparameters_group.add_argument("--exp_track", type=str, metavar='TRACK_EXPERIMENT',
@@ -65,7 +65,8 @@ args = parser.parse_args()
 
 # setup wandb
 # comment this line out, if you want to permanently set your API Keys in config/private_keys.py
-wandb.login(key=args.wandb_api_key)
+if args.exp_track == 'true':
+    wandb.login(key=args.wandb_api_key)
 
 # Transforms to convert the image in the format expected by the model
 simple_transforms = transforms.Compose([
@@ -88,7 +89,7 @@ model = RAUNet(in_channels=args.in_channels, out_channels=args.out_channels).to(
 # get_model_summary(baseline_0)
 
 # create a loss function instance
-if args.loss_fn == "BCELoss":
+if args.loss_fn == "BCEWithLogitsLoss":
     loss_fn = nn.BCEWithLogitsLoss()
 elif args.loss_fn == "CELDice":
     loss_fn = CELDice()

@@ -18,6 +18,7 @@ test_results
 wandb
 models/attention_unet.pth
 models/raunet.pth
+models/raunet_pure_noisy_mix.pth
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
